@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Spinner from '../UI/Spinner';
 import NewsItem from './NewsItem'
+import PropTypes from 'prop-types'
 
 export class News extends Component {
     // articles = [
@@ -44,6 +45,19 @@ export class News extends Component {
     //         "content": "Last week, we at ESPNcricinfo did something we have been thinking of doing for eight years now: pretend-live ball-by-ball commentary for a classic cricket match. We knew the result, yes, but we tried… [+6823 chars]"
     //     }
     // ]
+
+    static defaultProps = {
+        country: 'in',
+        pageSize: '6',
+        category: 'general'
+    }
+
+    static defaultPropTypes = {
+        country: PropTypes.string,
+        pageSize: PropTypes.number,
+        category: PropTypes.string
+    }
+
     constructor() {
         super();
         this.state = {
@@ -54,8 +68,8 @@ export class News extends Component {
     }
 
     async componentDidMount() {
-        let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=460ded1b747b454f9d0a1a5c26429216&page=${this.state.page}&pageSize=${this.props.pageSize}`;
-        this.setState({loading: true});
+        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=460ded1b747b454f9d0a1a5c26429216&page=${this.state.page}&pageSize=${this.props.pageSize}`;
+        this.setState({ loading: true });
         let data = await fetch(url);
         let parsedData = await data.json();
         // console.log(parsedData);
@@ -68,8 +82,8 @@ export class News extends Component {
 
     previousClickHandler = async () => {
         console.log("prev");
-        let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=460ded1b747b454f9d0a1a5c26429216&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
-        this.setState({loading: true});
+        let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=460ded1b747b454f9d0a1a5c26429216&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`;
+        this.setState({ loading: true });
         let data = await fetch(url);
         let parsedData = await data.json();
         this.setState({
@@ -80,12 +94,12 @@ export class News extends Component {
     };
 
     nextClickHandler = async () => {
-        if ( Math.ceil(this.state.totalResults/this.props.pageSize) < this.state.page + 1) {
-            
+        if (Math.ceil(this.state.totalResults / this.props.pageSize) < this.state.page + 1) {
+
         } else {
             console.log("next");
-            let url = `https://newsapi.org/v2/top-headlines?country=in&apiKey=460ded1b747b454f9d0a1a5c26429216&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
-            this.setState({loading:true});
+            let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=460ded1b747b454f9d0a1a5c26429216&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`;
+            this.setState({ loading: true });
             let data = await fetch(url);
             let parsedData = await data.json();
             this.setState({
@@ -99,9 +113,9 @@ export class News extends Component {
 
     render() {
         return (
-            <div className="container my-3">                
-                <h2 className="text-center">NewsMonkey - Top Headlines</h2>
-                {this.state.loading && <Spinner/>}
+            <div className="container my-3">
+                <h2 className="text-center" style={{margin:'35px'}}>NewsMonkey - Top Headlines</h2>
+                {this.state.loading && <Spinner />}
                 <div className="row my-3">
                     {!this.state.loading && this.state.articles.map((element) => {
                         return <div key={element.url} className="col-md-4">
@@ -117,7 +131,7 @@ export class News extends Component {
                 </div>
                 <div className="container d-flex justify-content-between">
                     <button type="button" disabled={this.state.page <= 1} className="btn btn-dark" onClick={this.previousClickHandler}>&larr; Previous</button>
-                    <button type="button" disabled = {( Math.ceil(this.state.totalResults/this.props.pageSize) < this.state.page + 1)} className="btn btn-dark" onClick={this.nextClickHandler}>Next &rarr;</button>
+                    <button type="button" disabled={(Math.ceil(this.state.totalResults / this.props.pageSize) < this.state.page + 1)} className="btn btn-dark" onClick={this.nextClickHandler}>Next &rarr;</button>
                 </div>
             </div>
         )
